@@ -3,7 +3,7 @@ function  plot_deltaF_byMovie( cellsToPlot,deltaF,sampRate,Stimuli,stims,spacing
 
 %% plot all traces
 fns=fieldnames(Stimuli);
-for j=1:length(fns)
+for j=1:5%length(fns)
     g= figure;
     
     fn=fns{j};

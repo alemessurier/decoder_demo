@@ -10,25 +10,25 @@ path_demo='/Users/amylemessurier/Desktop/f1/';
 %  plot dF/F traces for each cell by movie
 
 % cellsToPlot={'ROI56','ROI70','ROI80','ROI85','ROI86','ROI93'};
-cellsToPlot={'ROI96','ROI85','ROI55','ROI52','ROI40','ROI36','ROI35','ROI24'};
+cellsToPlot=find_sigROIs(permTestResults,traceByStim);
 whisk=fieldnames(traceByStim.(cellsToPlot{1}));
 stims=[whisk', 'blank'];
 plot_deltaF_byMovie( cellsToPlot,deltaF,sampRate,Stimuli,stims,2,4)
 
 %% Plot receptive fields for each cell
-cellsToPlot={'ROI96','ROI85','ROI55','ROI52','ROI40','ROI36','ROI35','ROI24'};
+cellsToPlot={'ROI96','ROI85','ROI55','ROI52','ROI122','ROI114'};
+% RF_plot_2016v2( cellsToPlot,traceByStim,sampRate(1),framesEvoked )
 RF_plot_simple( cellsToPlot,traceByStim,sponTrace,sampRate(1),framesEvoked )
+%% Color code by best whisker
 
+colorCodeByWhiskPref( path_demo )
 
 %% run basic detection decoder for this example field
 
 ensemble_size=[1:3,5:5:30];
-[cvN,PC_ensemble,PC_ensemble_shuff,popDists_ensemble,popDists_centroid,...
-    settings]=decode_detect_demo(path_demo,ensemble_size);
+[PC_ensemble,PC_ensemble_shuff,popDists_ensemble,popDists_centroid,...
+    settings]=decode_shuffVnorm_detect_20180718(path_demo,ensemble_size);
 
-%% Make ROI color coded plot indicating individual ROI performance on BW detection
-
-colorCodeByWhiskPref( path_demo )
 %% load in ensemble decoder results from all fields
 ensemble_size=[1:3,5:5:30];
 load('/Users/amylemessurier/Desktop/decoder_reduced/decoder_EN_detect_18-Jul-2018.mat')
@@ -102,7 +102,37 @@ semPC_CW_EN=std(PC_CW_single_EN)/sqrt(length(PC_CW_single_EN))
 meanPC_CW_NH=mean(PC_CW_single_NH)
 semPC_CW_NH=std(PC_CW_single_NH)/sqrt(length(PC_CW_single_NH))
 
+%%
+%%
+PbySizeMean_EN=cellfun(@(x)mean(x(:)),PC_all_EN);
+PbySizeSEM_EN=cellfun(@(x)std(x(:))/sqrt(length(x(:))),PC_all_EN);
 
+PbySizeShMean_EN=cellfun(@(x)mean(x(:)),PC_shuff_EN);
+PbySizeShSEM_EN=cellfun(@(x)std(x(:))/sqrt(length(x(:))),PC_shuff_EN);
+
+PbySizeMean_NH=cellfun(@(x)mean(x(:)),PC_all_NH);
+PbySizeSEM_NH=cellfun(@(x)std(x(:))/sqrt(length(x(:))),PC_all_NH);
+
+PbySizeShMean_NH=cellfun(@(x)mean(x(:)),PC_shuff_NH);
+PbySizeShSEM_NH=cellfun(@(x)std(x(:))/sqrt(length(x(:))),PC_shuff_NH);
+
+
+
+% figure; hold on
+% errorbar(ensemble_size,PbySizeMean_EN,PbySizeSEM_EN,'r.-','LineWidth',1);
+% errorbar(ensemble_size,PbySizeMean_NH,PbySizeSEM_NH,'k.-','LineWidth',1);
+% xlabel('ensemble size')
+% ylabel('mean percent correct')
+% title('non-shuffled, mean performance')
+% legend('EN','NH')
+% 
+% figure; hold on
+% errorbar(ensemble_size,PbySizeShMean_EN,PbySizeShSEM_EN,'r.-','LineWidth',1);
+% errorbar(ensemble_size,PbySizeShMean_NH,PbySizeShSEM_NH,'k.-','LineWidth',1);
+% xlabel('ensemble size')
+% ylabel('mean percent correct')
+% title('shuffled, mean performance')
+% legend('EN','NH')
 
 %% find mean performance of each ensemble on CWs (based on the min distance column)
 
