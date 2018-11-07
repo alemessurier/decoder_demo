@@ -132,6 +132,37 @@ xlabel('ensemble size')
 ylabel('mean percent correct')
 title('shuffled, mean performance')
 legend('EN','NH')
+
+%% find mean performance of each ensemble on CWs (based on the min distance column)
+
+mean_PCW_bySize_EN=zeros(1,numel(distsAll_EN));
+sem_PCW_bySize_EN=zeros(1,numel(distsAll_EN));
+for K=1:numel(distsAll_EN)
+    [~,CWidx]=min(distsAll_EN{K},[],1);
+    CWs=sub2ind(size(distsAll_EN{K}),CWidx,1:size(distsAll_EN{K},2));
+    PCuse=PC_all_EN{K}(CWs);
+    mean_PCW_bySize_EN(K)=mean(PCuse);
+    sem_PCW_bySize_EN(K)=std(PCuse)/sqrt(length(PCuse));
+end
+
+mean_PCW_bySize_NH=zeros(1,numel(distsAll_NH));
+sem_PCW_bySize_NH=zeros(1,numel(distsAll_NH));
+for K=1:numel(distsAll_NH)
+    [~,CWidx]=min(distsAll_NH{K},[],1);
+    CWs=sub2ind(size(distsAll_NH{K}),CWidx,1:size(distsAll_NH{K},2));
+    PCuse=PC_all_NH{K}(CWs);
+    mean_PCW_bySize_NH(K)=mean(PCuse);
+    sem_PCW_bySize_NH(K)=std(PCuse)/sqrt(length(PCuse));
+end
+
+figure; hold on
+errorbar(ensemble_size,mean_PCW_bySize_EN,sem_PCW_bySize_EN,'r.-','LineWidth',1);
+errorbar(ensemble_size,mean_PCW_bySize_NH,sem_PCW_bySize_NH,'k.-','LineWidth',1);
+xlabel('ensemble size')
+ylabel('mean percent correct')
+title('mean performance detecting closest whisker')
+legend('EN','NH')
+
 %% 
 for e=1:length(ensemble_size)
     [ dist_NH,mean_NH,sem_NH,num_ROIs_NH,binEdges ] = binVarByDist( distsAll_NH{e}(:), PC_all_NH{e}(:),20 );
